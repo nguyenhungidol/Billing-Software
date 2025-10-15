@@ -2,14 +2,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./MenuBar.css";
-import logo from "../../assets/assets";
 import { Link } from "react-router-dom";
+import { assets } from "../../assets/assets";
 
 const MenuBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-2">
       <Link className="navbar-brand" to="/">
-        <img src={logo} alt="Logo" height="40" />
+        <img src={assets.logo} alt="Logo" height="40" />
       </Link>
       <button
         className="navbar-toggler"
