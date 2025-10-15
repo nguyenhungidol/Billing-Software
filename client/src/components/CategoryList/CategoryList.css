@@ -1,0 +1,9 @@
+.category-list-container {
+}
+
+.category-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  border: 3px solid white;
+}
