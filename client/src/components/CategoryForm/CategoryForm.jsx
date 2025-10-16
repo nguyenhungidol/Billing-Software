@@ -26,12 +26,12 @@ const CategoryForm = () => {
 
   const onHandleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     if (!image) {
       toast.error("Please select an image");
       setLoading(false);
       return;
     }
+    setLoading(true);
     const formData = new FormData();
     formData.append("category", JSON.stringify(data));
     formData.append("file", image);
@@ -125,7 +125,7 @@ const CategoryForm = () => {
                 className="btn btn-warning w-100"
                 disabled={loading}
               >
-                {loading ? "Loading..." : "Save"}
+                {loading ? "Loading..." : "Submit"}
               </button>
             </form>
           </div>
