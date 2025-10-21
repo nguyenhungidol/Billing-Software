@@ -1,5 +1,6 @@
 package in.hungnguyen.billingsoftware.config;
 
+import in.hungnguyen.billingsoftware.filters.JwtRequestFilter;
 import in.hungnguyen.billingsoftware.service.Impl.AppUserDetailServiceImpl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,16 +28,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final AppUserDetailServiceImpl appUserDetailService;
+  private final JwtRequestFilter jwtRequestFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception {
     httpSecurity.cors(Customizer.withDefaults())
         .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(auth -> auth.requestMatchers("/login").permitAll()
+        .authorizeHttpRequests(auth -> auth.requestMatchers("/login", "/encode").permitAll()
             .requestMatchers("/category", "/items").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated())
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     return httpSecurity.build();
   }
 

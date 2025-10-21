@@ -1,0 +1,48 @@
+package in.hungnguyen.billingsoftware.controller;
+
+import in.hungnguyen.billingsoftware.io.UserRequest;
+import in.hungnguyen.billingsoftware.io.UserResponse;
+import in.hungnguyen.billingsoftware.service.UserService;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/admin")
+public class UserController {
+  private final UserService userService;
+
+  @PostMapping("/registers")
+  public UserResponse registerUser(@RequestBody UserRequest request){
+   try{
+     return userService.createUser(request);
+   }catch (Exception e){
+     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unable to create user" + e.getMessage());
+   }
+  }
+
+  @GetMapping("/users")
+  public List<UserResponse> readUsers(){
+    return userService.readUsers();
+  }
+
+  @DeleteMapping("/users/{id}")
+  public void deleteUser(@PathVariable String Userid){
+    try{
+      userService.deleteUser(Userid);
+    } catch (Exception e) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + Userid);
+    }
+  }
+}

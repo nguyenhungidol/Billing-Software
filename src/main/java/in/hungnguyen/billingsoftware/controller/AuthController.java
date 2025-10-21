@@ -3,6 +3,7 @@ package in.hungnguyen.billingsoftware.controller;
 import in.hungnguyen.billingsoftware.io.AuthRequest;
 import in.hungnguyen.billingsoftware.io.AuthResonse;
 import in.hungnguyen.billingsoftware.service.Impl.AppUserDetailServiceImpl;
+import in.hungnguyen.billingsoftware.service.UserService;
 import in.hungnguyen.billingsoftware.util.JwtUtil;
 import java.security.DigestException;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class AuthController {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final AppUserDetailServiceImpl appUserDetailService;
+  private final UserService userService;
   private final JwtUtil jwtUtil;
 
   @PostMapping("/login")
@@ -31,7 +33,8 @@ public class AuthController {
     authenticate(request.getEmail(), request.getPassword());
     final UserDetails user = appUserDetailService.loadUserByUsername(request.getEmail());
     String jwtToken = jwtUtil.generateToken(user);
-    return new AuthResonse(request.getEmail(), "USER", jwtToken);
+    String role = userService.getRoleUser(request.getEmail());
+    return new AuthResonse(request.getEmail(), role, jwtToken);
   }
   //TODO: fecth the role from repository
 
