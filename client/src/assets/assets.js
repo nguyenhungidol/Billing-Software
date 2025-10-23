@@ -1,4 +1,5 @@
 import logo from "./logo.png";
 import categoryempty from "./categoryempty.jpg";
+import login_bg from "./login_background.jpg";
 
-export const assets = { logo, categoryempty };
+export const assets = { logo, categoryempty, login_bg };
