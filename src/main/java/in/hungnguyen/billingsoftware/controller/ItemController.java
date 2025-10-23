@@ -2,14 +2,12 @@ package in.hungnguyen.billingsoftware.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import in.hungnguyen.billingsoftware.io.CategoryRequest;
-import in.hungnguyen.billingsoftware.io.CategoryResponse;
-import in.hungnguyen.billingsoftware.service.CategoryService;
+import in.hungnguyen.billingsoftware.io.ItemRequest;
+import in.hungnguyen.billingsoftware.io.ItemResponse;
+import in.hungnguyen.billingsoftware.service.ItemService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,38 +21,38 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
-public class CategoryController {
-  private final CategoryService categoryService;
+ public class ItemController {
+  private final ItemService itemService;
 
-  @PostMapping("/admin/categories")
+  @PostMapping("/admin/items")
   @ResponseStatus(HttpStatus.CREATED)
-  public CategoryResponse addCategory(@RequestPart("category") String categoryString, @RequestPart("file")
-      MultipartFile file){
+  public ItemResponse createItem(@RequestPart("item") String itemString,
+                                 @RequestPart("file") MultipartFile file) {
     ObjectMapper objectMapper = new ObjectMapper();
-    CategoryRequest categoryRequest = null;
+    ItemRequest itemRequest = null;
     try {
-      categoryRequest = objectMapper.readValue(categoryString, CategoryRequest.class );
-      return categoryService.add(categoryRequest, file);
+      itemRequest = objectMapper.readValue(itemString, ItemRequest.class);
+      return itemService.addItem(itemRequest, file);
     } catch (JsonProcessingException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "An occured while parse the Json: " + e.getMessage());
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "An occured while parse the Json: " + e.getMessage());
     }
   }
 
-  @GetMapping("/categories")
+  @GetMapping("/items")
   @ResponseStatus(HttpStatus.OK)
-  public List<CategoryResponse> getAllCategory(){
-    return categoryService.read();
+  public List<ItemResponse> readItem(){
+    return itemService.fetchItems();
   }
 
-  @DeleteMapping("/admin/categories/{id}")
+  @DeleteMapping("/admin/items/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteCategory(@PathVariable String id){
+  public void deleteItem(@PathVariable  String id){
     try{
-      categoryService.delete(id);
+      itemService.deleteItem(id);
     } catch (Exception e) {
-      throw new RuntimeException("Cannot delete category with id: " + id);
+      throw new RuntimeException("Cannot delete item with id: " + id);
     }
   }
+
 }
-
-

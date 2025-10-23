@@ -4,6 +4,7 @@ import in.hungnguyen.billingsoftware.entity.CategoryEntity;
 import in.hungnguyen.billingsoftware.io.CategoryRequest;
 import in.hungnguyen.billingsoftware.io.CategoryResponse;
 import in.hungnguyen.billingsoftware.repository.CategoryRepository;
+import in.hungnguyen.billingsoftware.repository.ItemRepository;
 import in.hungnguyen.billingsoftware.service.CategoryService;
 import in.hungnguyen.billingsoftware.service.FileUploadService;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CategoryServiceImpl implements CategoryService {
   public final CategoryRepository categoryRepository;
   public final FileUploadService fileUploadService;
+  public final ItemRepository itemRepository;
 
   @Override
   public CategoryResponse add(CategoryRequest categoryRequest, MultipartFile file) {
@@ -53,6 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
         .imgUrl(newCategory.getImgUrl())
         .createdAt(newCategory.getCreatedAt())
         .updatedAt(newCategory.getUpdatedAt())
+        .items(itemRepository.countByCategoryEntity_Id(newCategory.getId()))
         .build();
   }
 

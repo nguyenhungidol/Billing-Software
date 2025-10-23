@@ -24,6 +24,7 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/registers")
+  @ResponseStatus(HttpStatus.CREATED)
   public UserResponse registerUser(@RequestBody UserRequest request){
    try{
      return userService.createUser(request);
@@ -38,11 +39,12 @@ public class UserController {
   }
 
   @DeleteMapping("/users/{id}")
-  public void deleteUser(@PathVariable String Userid){
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteUser(@PathVariable String id){
     try{
-      userService.deleteUser(Userid);
+      userService.deleteUser(id);
     } catch (Exception e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + Userid);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + id);
     }
   }
 }

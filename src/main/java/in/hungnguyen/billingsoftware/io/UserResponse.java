@@ -9,7 +9,6 @@ import lombok.Data;
 public class UserResponse {
   private String userId;
   private String email;
-  private String password;
   private String name;
   private Timestamp createdAt;
   private Timestamp updatedAt;
