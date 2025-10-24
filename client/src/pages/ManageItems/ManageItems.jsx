@@ -1,16 +1,34 @@
-import React from "react";
 import "./ManageItems.css";
 import ItemsForm from "../../components/ItemsForm/ItemsForm";
 import ItemsList from "../../components/ItemsList/ItemsList";
+import { useEffect, useState } from "react";
+import { getItems } from "../../service/ItemService";
+import toast from "react-hot-toast";
 
 const ManageItems = () => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    async function fetchItems() {
+      try {
+        setLoading(true);
+        const response = await getItems();
+        setItems(response.data);
+      } catch (error) {
+        toast.error("Unable to fetch items");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchItems();
+  }, []);
   return (
     <div className="items-container text-light">
       <div className="left-column">
-        <ItemsForm />
+        <ItemsForm setItems={setItems} />
       </div>
       <div className="right-column">
-        <ItemsList />
+        <ItemsList items={items} setItems={setItems} />
       </div>
     </div>
   );

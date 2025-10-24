@@ -1,7 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "./CategoryForm.css";
 import { useContext, useEffect, useState } from "react";
 import { assets } from "../../assets/assets";
 import toast from "react-hot-toast";

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import "./Explore.css";
 import { AppContext } from "../../context/AppContext";
 

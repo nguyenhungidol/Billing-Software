@@ -4,9 +4,6 @@ import { deleteCategory } from "../../service/CategoryService";
 import "./CategoryList.css";
 
 import { toast } from "react-hot-toast";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 const CategoryList = () => {
   const { categories, setCategories } = useContext(AppContext);
@@ -74,7 +71,7 @@ const CategoryList = () => {
                 </div>
                 <div className="flex-grow-1">
                   <h5 className="mb-1 text-white">{category.name}</h5>
-                  <p className="mb-0 text-white">5 items</p>
+                  <p className="mb-0 text-white">{category.items} items</p>
                 </div>
                 <div>
                   <button

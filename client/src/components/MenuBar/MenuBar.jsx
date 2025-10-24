@@ -8,7 +8,7 @@ import { assets } from "../../assets/assets";
 const MenuBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-2">
-      <Link className="navbar-brand" to="/">
+      <Link className="navbar-brand" to="/dashboard">
         <img src={assets.logo} alt="Logo" height="40" />
       </Link>
       <button
