@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
 import "./ManageItems.css";
 import ItemsForm from "../../components/ItemsForm/ItemsForm";
 import ItemsList from "../../components/ItemsList/ItemsList";
-import { useEffect, useState } from "react";
 import { getItems } from "../../service/ItemService";
-import toast from "react-hot-toast";
 
 const ManageItems = () => {
   const [items, setItems] = useState([]);

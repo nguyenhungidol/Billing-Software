@@ -1,58 +1,81 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import "./MenuBar.css";
-import { Link } from "react-router-dom";
 import { assets } from "../../assets/assets";
 
+import { Link, useNavigate } from "react-router-dom";
+// Import các component cần thiết của react-bootstrap
+import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+
 const MenuBar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-2">
-      <Link className="navbar-brand" to="/dashboard">
+    // 1. Dùng <Navbar> thay cho <nav>
+    <Navbar bg="dark" variant="dark" expand="lg" className="px-2">
+      {/* 2. Dùng <Navbar.Brand> và 'as={Link}' */}
+      <Navbar.Brand as={Link} to="/dashboard">
         <img src={assets.logo} alt="Logo" height="40" />
-      </Link>
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-      <div className="collapse navbar-collapse p-2" id="navbarNav">
-        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-          <li className="nav-item">
-            <Link className="nav-link " to="/dashboard">
-              Dashboard
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/explore">
-              Explore
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/items">
-              Manage Items
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/category">
-              Manage Category
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/users">
-              Manage Users
-            </Link>
-          </li>
-        </ul>
-        {/* {Add the dropdown the profile} */}
-      </div>
-    </nav>
+      </Navbar.Brand>
+
+      {/* 3. Dùng <Navbar.Toggle> (tự động xử lý click) */}
+      <Navbar.Toggle aria-controls="navbarNav" />
+
+      {/* 4. Dùng <Navbar.Collapse> */}
+      <Navbar.Collapse id="navbarNav" className="p-2">
+        {/* 5. Dùng <Nav> thay cho <ul> */}
+        <Nav className="me-auto mb-2 mb-lg-0">
+          {/* 6. Dùng <Nav.Link> và 'as={Link}' */}
+          <Nav.Link as={Link} to="/dashboard">
+            Dashboard
+          </Nav.Link>
+          <Nav.Link as={Link} to="/explore">
+            Explore
+          </Nav.Link>
+          <Nav.Link as={Link} to="/items">
+            Manage Items
+          </Nav.Link>
+          <Nav.Link as={Link} to="/category">
+            Manage Category
+          </Nav.Link>
+          <Nav.Link as={Link} to="/users">
+            Manage Users
+          </Nav.Link>
+        </Nav>
+
+        {/* 7. Đây là phần Dropdown đã sửa */}
+        <Nav className="ms-auto ms-md-0 me-3 me-lg-4">
+          <NavDropdown
+            // 'title' nhận JSX, chính là nút bấm (ảnh profile)
+            title={
+              <img
+                src={assets.profile}
+                alt="Profile"
+                style={{ borderRadius: "50%", width: "32px", height: "32px" }}
+              />
+            }
+            id="navbarDropdown"
+            align="end" // Tự động căn lề phải (thay cho dropdown-menu-end)
+          >
+            {/* 8. Dùng <NavDropdown.Item> */}
+            <NavDropdown.Item as={Link} to="/settings">
+              Settings
+            </NavDropdown.Item>
+            <NavDropdown.Item as={Link} to="/activitylog">
+              Activity log
+            </NavDropdown.Item>
+
+            <NavDropdown.Divider />
+
+            <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+          </NavDropdown>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
   );
 };
 
