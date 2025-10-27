@@ -70,7 +70,7 @@ const ItemsForm = ({ setItems }) => {
     >
       <div className="mt-2 ms-2 me-4  ">
         <div className="row">
-          <div className="card col-md-8 form-container">
+          <div className="card col-md-12 form-container">
             <div className="card-body">
               <form onSubmit={onHandleSubmit}>
                 <div className="mb-3">

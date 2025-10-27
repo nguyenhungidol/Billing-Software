@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import toast from "react-hot-toast";
 
 import "./ManageItems.css";
 import ItemsForm from "../../components/ItemsForm/ItemsForm";
 import ItemsList from "../../components/ItemsList/ItemsList";
 import { getItems } from "../../service/ItemService";
+import { AppContext } from "../../context/AppContext";
 
 const ManageItems = () => {
-  const [items, setItems] = useState([]);
+  const { items, setItems } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     async function fetchItems() {
