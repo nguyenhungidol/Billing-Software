@@ -1,4 +1,102 @@
 package in.hungnguyen.billingsoftware.service.Impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import in.hungnguyen.billingsoftware.config.MomoConfig;
+import in.hungnguyen.billingsoftware.entity.OrderEntity;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+@RequiredArgsConstructor
 public class MomoService {
+
+  private final MomoConfig momoConfig;
+  private final RestTemplate restTemplate = new RestTemplate();
+
+  public String createPayment(OrderEntity order) throws Exception {
+    String requestId = String.valueOf(System.currentTimeMillis());
+    String orderId = order.getOrderId();
+    String amount = String.valueOf(order.getGrandTotal().intValue());
+
+    // ✅ KHÔNG encode orderInfo khi ký
+    String orderInfo = "Thanh toán đơn hàng " + orderId;
+
+    Map<String, Object> params = new LinkedHashMap<>();
+    params.put("partnerCode", momoConfig.getPARTNER_CODE());
+    params.put("accessKey", momoConfig.getACCESS_KEY());
+    params.put("requestId", requestId);
+    params.put("amount", amount);
+    params.put("orderId", orderId);
+    params.put("orderInfo", orderInfo);
+    params.put("redirectUrl", momoConfig.getREDIRECT_URL());
+    params.put("ipnUrl", momoConfig.getIPN_URL());
+    params.put("requestType", "captureWallet");
+    params.put("extraData", "");
+
+    // ✅ Build raw signature đúng thứ tự MoMo quy định
+    String rawSignature = String.format(
+        "accessKey=%s&amount=%s&extraData=%s&ipnUrl=%s&orderId=%s&orderInfo=%s&partnerCode=%s&redirectUrl=%s&requestId=%s&requestType=%s",
+        momoConfig.getACCESS_KEY(),
+        amount,
+        "",
+        momoConfig.getIPN_URL(),
+        orderId,
+        orderInfo,
+        momoConfig.getPARTNER_CODE(),
+        momoConfig.getREDIRECT_URL(),
+        requestId,
+        "captureWallet"
+    );
+
+    System.out.println("Raw Signature: " + rawSignature);
+
+    String signature = hmacSHA256(rawSignature, momoConfig.getSECRET_KEY());
+    params.put("signature", signature);
+
+    ObjectMapper mapper = new ObjectMapper();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(params), headers);
+
+    Map<String, Object> response = restTemplate.postForObject(
+        momoConfig.getENDPOINT(),
+        entity,
+        Map.class
+    );
+
+    if (response == null || !response.containsKey("payUrl")) {
+      throw new RuntimeException("Không tạo được URL thanh toán MoMo: " + response);
+    }
+
+    System.out.println("MoMo endpoint: " + momoConfig.getENDPOINT());
+    System.out.println("Signature: " + signature);
+    System.out.println("Request payload: " + mapper.writeValueAsString(params));
+
+
+    return (String) response.get("payUrl");
+  }
+
+  private String hmacSHA256(String data, String key) throws Exception {
+    Mac mac = Mac.getInstance("HmacSHA256");
+    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+    mac.init(secretKeySpec);
+    byte[] bytes = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+    StringBuilder hash = new StringBuilder();
+    for (byte b : bytes) {
+      String hex = Integer.toHexString(0xff & b);
+      if (hex.length() == 1) hash.append('0');
+      hash.append(hex);
+    }
+    return hash.toString();
+  }
 }

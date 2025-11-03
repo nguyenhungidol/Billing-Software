@@ -35,7 +35,8 @@ public class SecurityConfig {
     httpSecurity.cors(Customizer.withDefaults())
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth.requestMatchers("/login", "/encode").permitAll()
-            .requestMatchers("/categories", "/items").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/api/v1.0/payment/momo/ipn-handler").permitAll()
+            .requestMatchers("/categories", "/items", "orders").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -55,7 +56,7 @@ public class SecurityConfig {
 
   private UrlBasedCorsConfigurationSource corsConfigurationSource(){
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+    configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://test-payment.momo.vn"));
     configuration.setAllowedMethods(List.of("POST", "GET", "DELETE", "PUT", "PATCH", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     configuration.setAllowCredentials(true);

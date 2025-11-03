@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface OrderEntityRepository extends JpaRepository<OrderEntity, Long> {
   Optional<OrderEntity> findByOrderId(String orderId);
 
-  List<OrderEntity> findAllByOrderByCreatedDesc();
+  List<OrderEntity> findAllByOrderByCreatedAtDesc();
 }
