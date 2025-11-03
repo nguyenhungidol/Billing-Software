@@ -34,3 +34,4 @@ build/
 
 # Thêm tệp cấu hình chứa thông tin bí mật AWS
 src/main/resources/application.properties
+application.properties
