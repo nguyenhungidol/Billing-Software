@@ -68,7 +68,7 @@ const ItemsForm = ({ setItems }) => {
       className="item-form-container"
       style={{ height: "100vh", overflowY: "auto", overflowX: "hidden" }}
     >
-      <div className="mt-2 ms-2 me-4  ">
+      <div className="mt-2 ms-2 me-4">
         <div className="row">
           <div className="card col-md-12 form-container">
             <div className="card-body">

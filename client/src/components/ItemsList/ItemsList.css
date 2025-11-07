@@ -1,6 +1,29 @@
-.item-image {
-  width: 60px;
-  height: 60px;
+.item-list-container {
+  flex: 1; /* chiếm hết chiều cao còn lại trong left-column */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+/* Xóa hoặc sửa dòng height: 100vh thành auto */
+.item-list-container {
+  height: auto; /* để kế thừa chiều cao cha */
+  max-height: 100%; /* không vượt quá left-column */
+}
+
+.item-list-container .row {
+  margin: 0; /* loại bỏ margin âm của Bootstrap */
+}
+
+.card.bg-dark {
   border-radius: 10px;
-  border: 3px solid white;
+  overflow: hidden;
+}
+
+.item-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
 }

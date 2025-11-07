@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class PaymentDetails {
-  private String razorpayOrderId;
-  private String razorpayPaymentId;
-  private String razorpaySignature;
+  private String momoOrderId;
+  private String momoPaymentId;
+  private String momoSignature;
   private PaymentStatus paymentStatus;
   public enum PaymentStatus{
     PENDING, COMPLETED, FAILED

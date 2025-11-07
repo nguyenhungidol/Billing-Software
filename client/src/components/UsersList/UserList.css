@@ -1,4 +1,4 @@
-.category-list-container {
+.user-list-container {
   flex: 1; /* chiếm toàn bộ chiều cao còn lại của cột */
   overflow-y: auto;
   overflow-x: hidden;
@@ -8,7 +8,7 @@
 }
 
 /* Loại bỏ margin âm của Bootstrap row */
-.category-list-container .row {
+.user-list-container .row {
   margin: 0;
 }
 
@@ -17,19 +17,12 @@
   overflow: hidden;
 }
 
-.category-list-container .card {
+.user-list-container .card {
   border: none;
   background-color: #1e1e1e;
 }
 
-.category-list-container h5,
-.category-list-container p {
+.user-list-container h5,
+.user-list-container p {
   margin-bottom: 0.3rem;
-}
-
-.category-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 10px;
-  border: 3px solid white;
 }

@@ -36,13 +36,17 @@ public class OrderServiceImpl implements OrderService {
   }
 
   private OrderEntity convertToOrderEntity(OrderRequest orderRequest) {
+    PaymentMethod method = PaymentMethod.CASH;
+    if (orderRequest.getPaymentMethod() != null) {
+      method = PaymentMethod.valueOf(orderRequest.getPaymentMethod().toUpperCase());
+    }
     return  OrderEntity.builder()
         .customerName(orderRequest.getCustomerName())
         .phoneNumber(orderRequest.getPhoneNumber())
         .subTotal(orderRequest.getSubTotal())
         .tax(orderRequest.getTax())
         .grandTotal(orderRequest.getGrandTotal())
-        .paymentMethod(PaymentMethod.valueOf(orderRequest.getPaymentMethod()))
+        .paymentMethod(method)
         .build();
   }
 
@@ -93,5 +97,13 @@ public class OrderServiceImpl implements OrderService {
     return orderEntityRepository.findAllByOrderByCreatedAtDesc()
         .stream().map(this::convertToOrderResponse)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void updatePaymentStatus(String orderId, PaymentStatus status) {
+    OrderEntity order = orderEntityRepository.findByOrderId(orderId)
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy orderId: " + orderId));
+    order.getPaymentDetails().setPaymentStatus(status);
+    orderEntityRepository.save(order);
   }
 }

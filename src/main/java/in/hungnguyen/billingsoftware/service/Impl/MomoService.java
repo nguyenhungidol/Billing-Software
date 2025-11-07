@@ -22,7 +22,8 @@ public class MomoService {
   private final MomoConfig momoConfig;
   private final RestTemplate restTemplate = new RestTemplate();
 
-  public String createPayment(OrderEntity order) throws Exception {
+  public Map<String, Object> createPayment(OrderEntity order) throws Exception {
+
     String requestId = String.valueOf(System.currentTimeMillis());
     String orderId = order.getOrderId();
     String amount = String.valueOf(order.getGrandTotal().intValue());
@@ -57,15 +58,13 @@ public class MomoService {
         "captureWallet"
     );
 
-    System.out.println("Raw Signature: " + rawSignature);
-
     String signature = hmacSHA256(rawSignature, momoConfig.getSECRET_KEY());
     params.put("signature", signature);
 
-    ObjectMapper mapper = new ObjectMapper();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
+    ObjectMapper mapper = new ObjectMapper();
     HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(params), headers);
 
     Map<String, Object> response = restTemplate.postForObject(
@@ -77,13 +76,31 @@ public class MomoService {
     if (response == null || !response.containsKey("payUrl")) {
       throw new RuntimeException("Không tạo được URL thanh toán MoMo: " + response);
     }
+    return response;
+  }
 
-    System.out.println("MoMo endpoint: " + momoConfig.getENDPOINT());
-    System.out.println("Signature: " + signature);
-    System.out.println("Request payload: " + mapper.writeValueAsString(params));
+  public boolean verifySignature(Map<String, Object> body) throws Exception {
+    String rawSignature = String.format(
+        "accessKey=%s&amount=%s&extraData=%s&message=%s&orderId=%s&orderInfo=%s&orderType=%s&partnerCode=%s&payType=%s&requestId=%s&responseTime=%s&resultCode=%s&transId=%s",
+        momoConfig.getACCESS_KEY(),
+        body.get("amount").toString(),
+        body.get("extraData") == null ? "" : body.get("extraData").toString(),
+        body.get("message"),
+        body.get("orderId"),
+        body.get("orderInfo"),
+        body.get("orderType"),
+        body.get("partnerCode"),
+        body.get("payType"),
+        body.get("requestId"),
+        body.get("responseTime").toString(),
+        body.get("resultCode").toString(),
+        body.get("transId").toString()
+    );
 
+    String computedSignature = hmacSHA256(rawSignature, momoConfig.getSECRET_KEY());
+    String receivedSignature = (String) body.get("signature");
 
-    return (String) response.get("payUrl");
+    return computedSignature.equals(receivedSignature);
   }
 
   private String hmacSHA256(String data, String key) throws Exception {
