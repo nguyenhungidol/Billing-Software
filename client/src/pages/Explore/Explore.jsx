@@ -7,42 +7,12 @@ import CartSummary from "../../components/CartSummary/CartSummary";
 
 import { AppContext } from "../../context/AppContext";
 import { useContext, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 
 const Explore = () => {
   const { categories } = useContext(AppContext);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
-
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const query = new URLSearchParams(location.search);
-
-    const resultCode = query.get("resultCode");
-
-    if (resultCode) {
-      if (resultCode === "0") {
-        toast.success("Thanh toán MoMo thành công!");
-      } else {
-        toast.error("Thanh toán thất bại! Vui lòng thử lại.");
-      }
-
-      // ✅ Xóa query param sau khi hiển thị toast
-      query.delete("resultCode");
-      navigate(
-        {
-          pathname: location.pathname,
-          search: query.toString(),
-        },
-        { replace: true }
-      );
-    }
-  }, [location.search, navigate]);
 
   return (
     <div className="explore-container text-light">

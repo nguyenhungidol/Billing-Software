@@ -6,6 +6,7 @@ import in.hungnguyen.billingsoftware.service.OrderService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,5 +39,15 @@ public class OrderController {
   public List<OrderResponse> getLatestOrders(){
     return orderService
         .getLatestOrders();
+  }
+
+  @GetMapping("/{orderId}")
+  public ResponseEntity<OrderResponse> getOrderById(@PathVariable String orderId) {
+    try {
+      OrderResponse orderResponse = orderService.getOrderById(orderId);
+      return ResponseEntity.ok(orderResponse);
+    } catch (RuntimeException e) { // Bắt lỗi nếu không tìm thấy
+      return ResponseEntity.notFound().build();
+    }
   }
 }

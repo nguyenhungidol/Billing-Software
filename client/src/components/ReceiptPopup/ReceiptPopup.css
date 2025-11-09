@@ -1,0 +1,123 @@
+.receipt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Khung popup */
+.receipt-popup {
+  background: white;
+  border-radius: 8px;
+  width: 450px; /* Hoặc % tùy bạn */
+  max-width: 90%;
+  max-height: 90vh;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Nội dung hóa đơn, có thể cuộn */
+.receipt-content {
+  padding: 25px;
+  overflow-y: auto;
+  color: #000; /* Đảm bảo màu chữ là màu đen khi in */
+}
+
+.receipt-content h3,
+.receipt-content h4 {
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.receipt-content p {
+  margin: 5px 0;
+}
+
+/* Bảng chi tiết */
+.receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 0.95rem;
+}
+
+.receipt-table th,
+.receipt-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.receipt-table th {
+  background-color: #f2f2f2;
+}
+
+.receipt-table td:nth-child(2),
+.receipt-table td:nth-child(3),
+.receipt-table td:nth-child(4) {
+  text-align: right;
+}
+
+/* Phần tổng tiền */
+.receipt-totals {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.receipt-totals p,
+.receipt-totals h4 {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.receipt-totals .grand-total {
+  font-size: 1.2rem;
+  color: #000;
+  border-top: 1px solid #ccc;
+  padding-top: 5px;
+  margin-top: 5px;
+}
+
+.receipt-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Nút bấm (Đóng, In) */
+.receipt-actions {
+  padding: 15px 25px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end; /* Đẩy nút về bên phải */
+  gap: 10px;
+  background-color: #f9f9f9;
+}
+
+/* Ẩn các nút bấm khi in */
+@media print {
+  .receipt-overlay {
+    position: relative;
+    background: none;
+  }
+  .receipt-popup {
+    width: 100%;
+    max-height: none;
+    box-shadow: none;
+  }
+  .receipt-actions {
+    display: none !important;
+  }
+}

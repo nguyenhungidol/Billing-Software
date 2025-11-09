@@ -100,6 +100,13 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  public OrderResponse getOrderById(String orderId) {
+    OrderEntity orderEntity = orderEntityRepository.findByOrderId(orderId)
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
+    return convertToOrderResponse(orderEntity);
+  }
+
+  @Override
   public void updatePaymentStatus(String orderId, PaymentStatus status) {
     OrderEntity order = orderEntityRepository.findByOrderId(orderId)
         .orElseThrow(() -> new RuntimeException("Không tìm thấy orderId: " + orderId));

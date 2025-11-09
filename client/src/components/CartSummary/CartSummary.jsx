@@ -3,10 +3,12 @@ import { AppContext } from "../../context/AppContext";
 import ReceiptPopup from "../ReceiptPopup/ReceiptPopup";
 import { createPay } from "../../service/MomoService";
 import { validatePhoneNumber } from "../../validator/ValidatePhoneNumber";
-
-import { useContext, useState } from "react";
-import toast from "react-hot-toast";
 import { createOrder } from "../../service/OrderService";
+import { getOrderById } from "../../service/OrderService";
+
+import { useContext, useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const CartSummary = ({
   customerName,
@@ -14,7 +16,10 @@ const CartSummary = ({
   mobileNumber,
   setMobileNumber,
 }) => {
-  const { cartItems } = useContext(AppContext);
+  const { cartItems, setCartItems } = useContext(AppContext);
+
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
 
   const totalMount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -24,24 +29,120 @@ const CartSummary = ({
   const tax = totalMount * 0.01;
   const grandTotal = totalMount + tax;
 
-  const handleMomopay = async () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const resultCode = query.get("resultCode");
+    const orderId = query.get("orderId"); // MoMo sẽ trả về orderId này
+
+    if (resultCode && orderId) {
+      if (resultCode === "0") {
+        toast.success("Thanh toán MoMo thành công!");
+
+        // GỌI API ĐỂ LẤY LẠI THÔNG TIN ĐƠN HÀNG
+        getOrderById(orderId)
+          .then((response) => {
+            // Lưu thông tin vào state
+            setOrderDetails(response.data);
+
+            // Tùy chọn: Tự động mở popup hóa đơn
+            // setShowReceipt(true);
+
+            // Xóa giỏ hàng và form sau khi thành công
+            setCartItems([]);
+            setCustomerName("");
+            setMobileNumber("");
+          })
+          .catch((err) => {
+            toast.error("Lỗi: Không thể tải thông tin đơn hàng.");
+          });
+      } else {
+        // Lấy mã lỗi từ MoMo (ví dụ: message=...)
+        const message = query.get("message") || "Thanh toán thất bại!";
+        toast.error(`Thanh toán thất bại: ${message}`);
+      }
+
+      // ✅ Xóa query param sau khi đã xử lý xong
+      query.delete("resultCode");
+      query.delete("orderId");
+      query.delete("message"); // Xóa hết các param của MoMo
+      // ...
+      navigate(
+        {
+          pathname: location.pathname,
+          search: query.toString(),
+        },
+        { replace: true }
+      );
+    }
+  }, [
+    location.search,
+    navigate,
+    setCartItems,
+    setCustomerName,
+    setMobileNumber,
+  ]);
+
+  const validateInput = () => {
     if (!customerName || !mobileNumber) {
       toast.error(
         "Vui lòng nhập đầy đủ thông tin khách hàng trước khi thanh toán!"
       );
-      return;
+      return false;
     }
-
     const phoneError = validatePhoneNumber(mobileNumber);
     if (phoneError) {
       toast.error(phoneError);
-      return;
+      return false;
     }
-
     if (cartItems.length === 0) {
       toast.error("Giỏ hàng trống!");
-      return;
+      return false;
     }
+    return true; // Tất cả đều hợp lệ
+  };
+
+  const handleCashPay = async () => {
+    if (!validateInput()) return;
+
+    try {
+      const orderRequest = {
+        customerName,
+        phoneNumber: mobileNumber,
+        cartItems: cartItems.map((item) => ({
+          itemId: item.itemId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        subTotal: totalMount,
+        tax,
+        grandTotal,
+        paymentMethod: "CASH",
+      };
+
+      const orderResponse = await createOrder(orderRequest);
+      console.log(
+        "✅ Đơn hàng TIỀN MẶT đã được tạo:",
+        orderResponse.data.orderId
+      );
+      toast.success("Tạo đơn hàng thành công!");
+
+      setOrderDetails(orderResponse.data); // Lưu dữ liệu đơn hàng để in hóa đơn
+
+      setCartItems([]);
+      setCustomerName("");
+      setMobileNumber("");
+    } catch (error) {
+      console.error("❌ Lỗi khi tạo đơn hàng:", error);
+      toast.error("Lỗi khi tạo đơn hàng: " + error.message);
+    }
+  };
+
+  const handleMomopay = async () => {
+    if (!validateInput()) return;
 
     try {
       const orderRequest = {
@@ -60,6 +161,8 @@ const CartSummary = ({
       };
       const orderResponse = await createOrder(orderRequest);
       console.log("✅ Đơn hàng đã được tạo:", orderResponse.data);
+
+      setOrderDetails(orderResponse.data); // Lưu dữ liệu đơn hàng để in hóa đơn
 
       const orderData = {
         orderId: orderResponse.data.orderId, // tạo id đơn hàng ngẫu nhiên
@@ -84,6 +187,14 @@ const CartSummary = ({
     }
   };
 
+  const placeOrder = () => {
+    if (orderDetails) {
+      setShowReceipt(true);
+    } else {
+      toast.error("Chưa có thông tin hóa đơn để hiển thị!");
+    }
+  };
+
   return (
     <div className="mt-2">
       <div className="cart-summary-details">
@@ -104,6 +215,7 @@ const CartSummary = ({
         <button
           className="btn btn-success flex-grow-1"
           style={{ lineHeight: "1.2rem" }}
+          onClick={handleCashPay}
         >
           Cash
         </button>
@@ -119,10 +231,17 @@ const CartSummary = ({
         <button
           className="btn btn-warning flex-grow-1"
           style={{ lineHeight: "1.2rem" }}
+          onClick={placeOrder}
         >
           Place Order
         </button>
       </div>
+      {showReceipt && (
+        <ReceiptPopup
+          orderDetails={orderDetails}
+          onClose={() => setShowReceipt(false)}
+        />
+      )}
     </div>
   );
 };

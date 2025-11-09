@@ -23,3 +23,11 @@ export const deleteOrder = async (id) => {
     },
   });
 };
+
+export const getOrderById = async (id) => {
+  return await axios.get(`http://localhost:8080/api/v1.0/orders/${id}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+};

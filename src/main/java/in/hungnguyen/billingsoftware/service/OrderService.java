@@ -9,5 +9,6 @@ public interface OrderService  {
   OrderResponse createOrder(OrderRequest orderRequest);
   void deleteOrder(String orderId);
   List<OrderResponse> getLatestOrders();
+  OrderResponse getOrderById(String orderId);
   void updatePaymentStatus(String orderId, PaymentStatus status);
 }
