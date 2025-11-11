@@ -1,4 +1,3 @@
-import "./CartSummary.css";
 import { AppContext } from "../../context/AppContext";
 import ReceiptPopup from "../ReceiptPopup/ReceiptPopup";
 import { createPay } from "../../service/MomoService";
