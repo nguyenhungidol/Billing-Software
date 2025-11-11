@@ -57,7 +57,7 @@ const ItemsForm = ({ setItems }) => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Unable to add item");
+      toast.error("Không thêm được item");
     } finally {
       setLoading(false);
     }
