@@ -30,7 +30,7 @@ const UsersForm = ({ setUsers }) => {
       });
     } catch (error) {
       console.log(error);
-      toast.error("Unable to create user");
+      toast.error("Không tạo được user");
     } finally {
       setLoading(false);
     }
