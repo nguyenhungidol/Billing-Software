@@ -16,7 +16,7 @@ const ManageUsers = () => {
         const response = await getUsers();
         setUsers(response.data);
       } catch (error) {
-        toast.error("Unable to fetch users");
+        toast.error("Không có quyền truy cập");
       } finally {
         setLoading(false);
       }
